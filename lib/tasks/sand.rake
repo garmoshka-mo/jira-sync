@@ -1,18 +1,8 @@
 
-task sync: :environment do
-
+task jira: :environment do
   jira = Jira.new
-
-  session = GoogleDrive::Session.from_service_account_key("config/client-secret.json")
-  spreadsheet = session.spreadsheet_by_title('Daily log')
-  @worksheet = spreadsheet.worksheets.first
-  credentials = Hash.new
-
-  @worksheet.rows.drop(1).each_with_index do |row, index|
-    credentials[row[0]] = [row[2], row[3], row[4], row[1], row[5], index + 2] unless row[5] == 'Credentials imported'
-  end
-
-  credentials.to_json
+  jira.log_work 2, "CT-22 refactor memory monitor, don't use forking, debug",
+                "2012-01-12T16:08:58.529+1300", "Cohort targeting"
 
   puts :done
 end

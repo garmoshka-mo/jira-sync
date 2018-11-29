@@ -21,6 +21,36 @@ class Jira
     @client.Field.map_fields
   end
 
+  def issue(name)
+    jql = %Q(summary ~ "#{name}")
+    issues = @client.Issue.jql jql, fields: ['worklogs']
+    raise "Must be 1 issue, found #{issues.count}" unless issues.count == 1
+    issues.first
+  rescue => e
+    handle_error e
+  end
+
+  def log_work(hours, comment, date, project)
+    issue = issue project
+
+    log = JIRA::Resource::Worklog.new(@client, issue_id: issue.id)
+    log.save!({
+      "started": "#{date}T13:08:00.123+0000",
+      "timeSpent": "#{hours}h",
+      'comment': comment
+    })
+  rescue => e
+    handle_error e
+  end
+
+  def handle_error(e)
+    details = e.message
+    if e.respond_to?(:response) and e.response.respond_to?(:body) and not e.response.body.include?('<body>')
+      details += " #{e.response.body}"
+    end
+    raise "JIRA error: #{details}"
+  end
+
   def get_voucher_codes_for(city, refresh)
     if @disabled or city.test?
       return ['Dummy code (JIRA disabled)', 'Dummy code 2']
