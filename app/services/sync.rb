@@ -1,16 +1,12 @@
 class Sync
 
-  MAP = {
-    CT: 'Cohort targeting',
-
-  }
-
   attr_reader :row
 
   def initialize(worksheet)
     @worksheet = worksheet
     @date = nil
     @jira = Jira.new
+    load_projects_map
   end
 
   def run(start_from)
@@ -22,6 +18,10 @@ class Sync
   end
 
   private
+
+  def load_projects_map
+    @projects_map = YAML.load_file( 'config/projects.yml'). symbolize_keys
+  end
 
   def get_row
     @row = (1..@worksheet.num_cols).map do |col|
@@ -50,6 +50,7 @@ class Sync
     echo_row
     byebug
     @worksheet.reload
+    load_projects_map
     retry
   end
 
@@ -80,7 +81,7 @@ class Sync
       code = Dialog.ask "Type project code:"
     end
 
-    project = MAP[code.to_sym]
+    project = @projects_map[code.to_sym]
     raise "Unknown project code #{code}" unless project
 
     raise "Time not set" if row[1].empty?
@@ -89,7 +90,7 @@ class Sync
     echo_row
     puts "#{project} > #{row[1]}h: #{comment}"
 
-    answer = Dialog.ask 'Add?'
+    answer = Dialog.ask 'Add? (press Enter)'
     if answer == :''
       @jira.log_work row[1], comment, @date, project
       puts "Added."

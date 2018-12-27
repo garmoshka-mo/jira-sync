@@ -19,9 +19,9 @@ module Dialog
 
   def yes?(question)
     response = ask question
-    if response == :yes
+    if response.in? [:yes, :y]
       true
-    elsif response == :no
+    elsif response.in? [:no, :n]
       false
     else
       error "Unknown cmd response: #{response}"
