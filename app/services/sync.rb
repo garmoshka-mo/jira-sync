@@ -48,10 +48,13 @@ class Sync
     puts e.backtrace.reverse.last(3)
     puts e.to_s.red
     echo_row
-    byebug
-    @worksheet.reload
-    load_projects_map
-    retry
+    if Dialog.yes? "Retry?"
+      @worksheet.reload
+      load_projects_map
+      retry
+    else
+      puts "Row #{@row_index} skipped".red
+    end
   end
 
   def echo_row
@@ -69,11 +72,16 @@ class Sync
     if @date
       puts "--------------------"
       puts "#{row[3]} => #{@date}"
+      unless @date.include? Date.today.strftime("%B")
+        unless Dialog.yes? "Current month finished. Continue?"
+          exit
+        end
+      end
     end
   end
 
   def parse_time_entry
-    match = row[2].match /(\w+)-/
+    match = row[2].match /(\w+)-?/
     raise "Ticket not set: #{row[2]}" unless match
     code = match[1]
     if code == 'AENGINE'
