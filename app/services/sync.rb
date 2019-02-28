@@ -38,8 +38,8 @@ class Sync
       set_date
     elsif row[3] == 'Today:'
       return
-    elsif row[3].empty?
-      @date = nil
+    elsif row[3].empty? or row[3].in? %w(Tomorrow: Monday:)
+      @date = nil if @current_day_rows > 0
     else
       parse_time_entry
     end
@@ -70,9 +70,10 @@ class Sync
     end
 
     if @date
+      @current_day_rows = 0
       puts "--------------------"
       puts "#{row[3]} => #{@date}"
-      unless @date.include? Date.today.strftime("%B")
+      unless @date.month == Date.today.month
         unless Dialog.yes? "Current month finished. Continue?"
           exit
         end
@@ -98,6 +99,7 @@ class Sync
     echo_row
     puts "#{project} > #{row[1]}h: #{comment}"
 
+    @current_day_rows += 1
     answer = Dialog.ask 'Add? (press Enter)'
     if answer == :''
       @jira.log_work row[1], comment, @date, project
