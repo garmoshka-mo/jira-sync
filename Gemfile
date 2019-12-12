@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+gem 'toggl_api'
 gem 'jira-ruby'
 gem 'google_drive'
 gem 'dotenv-rails'
