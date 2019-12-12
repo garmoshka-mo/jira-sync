@@ -3,6 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.3.7'
 
+gem 'toggl_api'
 gem 'jira-ruby'
 gem 'google_drive'
 gem 'dotenv-rails'
