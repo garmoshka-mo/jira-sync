@@ -1,77 +1,33 @@
 class TogglReport
 
-  REPORT_PROJECTS = %w(activate fly)
+  WORKSPACE_ID = 1612978
 
   def initialize
-    @api = Toggl::Base.new ENV['TOGGL_TOKEN']
-    @projects = {}
+    @since = '2019-12-01'
+    @until = '2019-12-20'
+    @page = 0
+    @total = 0
   end
 
   def report
-    collect_entries
-    output_reports
-  end
-
-  private
-
-  def collect_entries
-    @entries = {}
-    rows = @api.time_entries(Time.now.beginning_of_month)
-    rows.each do |row|
-      pr_name = project(row).name
-      pr = @entries[pr_name] ||= {}
-
-      date = Time.parse(row.start).to_date
-      day = pr[date] ||= {}
-
-      entry = row.description
-      duration = if row.stop and row.duration >= 0
-                   row.duration
-                 else
-                   Time.now - started_at
-                 end
-      day[entry] ||= 0
-      day[entry] += duration
-    end
-  end
-
-  def output_reports
-    @entries.each do |pr_name, project|
-      total_hours = project.map do |date, day|
-        day.map do |entry, duration|
-          duration
-        end
-      end.flatten.sum
-      if pr_name.in? REPORT_PROJECTS
-        write_project_report pr_name, project
-        status = 'Write'
-      else
-        status = 'Skip'
+    begin
+      p = portion
+      @total += p['data'].count
+      p['data'].each do |row|
+        puts row['id']
       end
-      puts "#{status} #{pr_name}: #{to_hours total_hours}"
-    end
+    end while @total < p['total_count']
   end
 
-  def write_project_report pr_name, project
-    File.open("reports/#{pr_name}.md", 'w') do |file|
-      project.each do |date, day|
-        file.write("\n### #{date.strftime "%^a %d"}\n")
-        day.sort_by do |entry, duration|
-          -duration
-        end.each do |entry, duration|
-          file.write("#{to_hours duration}: #{entry}\n")
-        end
-      end
-    end
-  end
-
-  def to_hours(seconds)
-    (seconds.to_f / 60 / 60).round(1)
-  end
-
-  def project(entry)
-    return OpenStruct.new unless entry.pid
-    @projects[entry.pid] ||= @api.get_project(entry.pid)
+  def portion
+    @page += 1
+    result = RestClient::Request.execute(
+      method: :get,
+      url: "https://toggl.com/reports/api/v2/details?workspace_id=#{WORKSPACE_ID}&since=#{@since}&until=#{@until}&user_agent=api_test&page=#{@page}",
+      user: ENV['TOGGL_TOKEN'],
+      password: 'api_token'
+    )
+    JSON.parse result.body
   end
 
 end

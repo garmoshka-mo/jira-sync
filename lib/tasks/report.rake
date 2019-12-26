@@ -2,7 +2,7 @@
 task report: :environment do
 
   puts "Toggl report"
-  TogglReport.new.report
+  Report.new.create
 
   puts :done
 end
