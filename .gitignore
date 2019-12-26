@@ -33,3 +33,4 @@
 .idea/
 config/google_cloud_keyfile.json
 .DS_Store
+reports/*
