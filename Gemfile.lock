@@ -85,6 +85,7 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (~> 0.7)
+    hashie (4.0.0)
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
@@ -190,6 +191,10 @@ GEM
       sprockets (>= 3.0.0)
     thor (0.20.3)
     thread_safe (0.3.6)
+    toggl_api (0.0.2)
+      faraday
+      hashie
+      multi_json
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     uber (0.1.0)
@@ -213,6 +218,7 @@ DEPENDENCIES
   rest-client
   spring
   spring-watcher-listen (~> 2.0.0)
+  toggl_api
 
 BUNDLED WITH
-   2.1.1
+   2.1.2

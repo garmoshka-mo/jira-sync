@@ -5,6 +5,8 @@ gem 'jira-ruby'
 gem 'google_drive'
 gem 'dotenv-rails'
 gem 'colorize'
+
+gem 'toggl_api'
 gem 'rest-client'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
