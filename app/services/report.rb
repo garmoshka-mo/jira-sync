@@ -48,7 +48,7 @@ class Report
       end.flatten.sum
 
       if pr_name.in? REPORT_PROJECTS
-        write_project_report pr_name, project
+        write_project_report pr_name, project, total_hours
         status = 'Write'
       else
         status = 'Skip'
@@ -57,17 +57,16 @@ class Report
     end
   end
 
-  def write_project_report pr_name, project
+  def write_project_report pr_name, project, total_hours
     File.open("reports/#{pr_name}.md", 'w') do |file|
-      project.sort do |row|
-        row[0].to_time.to_i # date
-      end.each do |date, day|
+      file.write("# #{pr_name} #{to_hours total_hours}\n")
+      project.sort.each do |date, day|
         file.write("\n### #{date.strftime "%^a %d"}\n")
         day.map do |user, work_log|
           total_hours = work_log.map{|entry, duration| duration}.flatten.sum
           file.write("#### #{user} ⏰ #{to_hours total_hours}\n")
-          work_log.sort do |row|
-            -row[1] # duration
+          work_log.sort do |row1, row2|
+            row2[1].to_i <=> row1[1].to_i # duration
           end.each do |entry, duration|
             file.write("#{to_hours duration}: #{entry}\n")
           end
