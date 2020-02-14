@@ -1,6 +1,6 @@
 class Report
 
-  REPORT_PROJECTS = %w(activate fly AE)
+  REPORT_PROJECTS = %w(activate fly inspectAll AE)
 
   def initialize
     @api = Toggl::Base.new ENV['TOGGL_TOKEN']
