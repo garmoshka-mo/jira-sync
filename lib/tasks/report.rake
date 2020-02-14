@@ -5,5 +5,6 @@ task report: :environment do
   Report.new.create
 
   puts :done
+  `open reports/.`
 end
 
