@@ -8,6 +8,7 @@ class Report
   end
 
   def create
+    `rm reports/*.md`
     collect_entries
     output_reports
   end
