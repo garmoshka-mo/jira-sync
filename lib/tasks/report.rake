@@ -8,3 +8,4 @@ task report: :environment do
   `open reports/.`
 end
 
+task :reports => :report

@@ -220,5 +220,3 @@ DEPENDENCIES
   spring-watcher-listen (~> 2.0.0)
   toggl_api
 
-BUNDLED WITH
-   2.1.2
