@@ -8,19 +8,35 @@ class Sync
 
     @lines = File.readlines path
     @date = nil
+    @collected = []
     @jira = Jira.new
     load_project project
   end
 
-  def run(start_from)
+  def collect(start_from)
     @row_index = start_from
     while get_row
       handle_row
       @row_index += 1
     end
+    summary
+  end
+
+  def import
+    @collected.each do |rec|
+      @jira.log_work rec[:hours], rec[:description], rec[:date], rec[:project]
+    end
   end
 
   private
+
+  def summary
+    total = 0.0
+    @collected.each do |rec|
+      total += rec[:hours].to_f
+    end
+    puts "Collected #{@collected.count} records for #{total} hours"
+  end
 
   def load_project short_name
     projects_map = YAML.load_file( 'config/projects.yml').symbolize_keys
@@ -35,7 +51,7 @@ class Sync
   def handle_row
 
     set_date or
-    import_hours_record
+    collect_hours_record
 
   rescue => e
     puts line
@@ -49,15 +65,16 @@ class Sync
     end
   end
 
-  def import_hours_record
-    m = line.match /^==(\d*)\s(.*)/
+  def collect_hours_record
+    m = line.match /^==(\d*\.?\d*)\s(.*)/
     return unless m
     hours, description = m[1], m[2]
     hours = 8 unless hours.present?
 
     raise "Date not set" unless @date
 
-    @jira.log_work hours, description, @date, @project
+    @collected << {hours: hours, description: description,
+      date: @date, project: @project}
     puts "> #{@date} #{hours}h row#{@row_index}: #{description}"
   end
 

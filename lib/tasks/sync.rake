@@ -1,13 +1,16 @@
 
-task sync: :environment do |_, args|
+task import: :environment do |_, args|
 
   project = args[0]
   sync = Sync.new project
 
   start_from = ENV['START']&.to_i || 1
-  sync.run start_from
+  sync.collect start_from
+  if Dialog.yes? "Import records?"
+    sync.import
+    puts :done
+  end
 
-  puts :done
 end
 
 
