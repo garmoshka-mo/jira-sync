@@ -3,10 +3,10 @@ class Sync
   attr_reader :line
 
   def initialize(project)
-    path = "reports/#{project}.md"
-    raise "Project file absent: #{path}" unless File.exist? path
+    @path = "reports/#{project}.md"
+    raise "Project file absent: #{@path}" unless File.exist? @path
 
-    @lines = File.readlines path
+    @lines = File.readlines @path
     @date = nil
     @collected = []
     @jira = Jira.new
@@ -26,6 +26,7 @@ class Sync
     @collected.each do |rec|
       @jira.log_work rec[:hours], rec[:description], rec[:date], rec[:project]
     end
+    move_to_trash @path
   end
 
   private
@@ -88,6 +89,17 @@ class Sync
       @date = Date.today.change day: m[1].to_i
       true
     end
+  end
+
+  def move_to_trash(file)
+    file = Rails.root.join file
+    cmd = <<-BASH
+      osascript -e 'set theFile to POSIX file "#{file}"' \
+          -e 'tell application "Finder"' \
+                      -e 'delete theFile' \
+                  -e 'end tell'
+    BASH
+    system cmd
   end
 
 end

@@ -17,7 +17,7 @@ class Report
 
   def collect_entries
     @entries = {}
-    toggl = TogglReport.new Time.now.beginning_of_month
+    toggl = TogglReport.new start_from
     toggl.each do |row|
       pr_name = project(row).name
       pr = @entries[pr_name] ||= {}
@@ -36,6 +36,20 @@ class Report
       work_log[entry] ||= 0
       work_log[entry] += duration
     end
+  end
+
+  def start_from
+    if Time.now.day < 20 # Report in the middle of a month
+      date = Time.now.beginning_of_month.to_date
+    else
+      date = Time.now.to_date.change day: 16
+    end
+    date -= 3.day
+
+    # date -= 1.day # Day, when filled previous report
+    #w = date.strftime('%a')
+
+    date
   end
 
   def output_reports

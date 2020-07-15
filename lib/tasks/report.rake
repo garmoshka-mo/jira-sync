@@ -5,9 +5,10 @@ task report: :environment do
   Report.new.create
 
   puts :done
+  puts "-----------------"
   puts "Import format:"
-  puts "==4 Description of work"
-  puts "rk import project_name"
+  puts "==4 Description of work".blue
+  puts "rk import project_name".blue
   `open reports/.`
 end
 
