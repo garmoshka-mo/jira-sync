@@ -9,6 +9,7 @@ class Sync
     @lines = File.readlines @path
     @date = nil
     @collected = []
+    @composed_record = ""
     @jira = Jira.new
     load_project project
   end
@@ -36,7 +37,7 @@ class Sync
     @collected.each do |rec|
       total += rec[:hours].to_f
     end
-    puts "Collected #{@collected.count} records for #{total} hours"
+    puts "\nCollected #{@collected.count} records for #{total} hours"
   end
 
   def load_project short_name
@@ -67,16 +68,33 @@ class Sync
   end
 
   def collect_hours_record
-    m = line.match /^==(\d*\.?\d*)\s(.*)/
-    return unless m
-    hours, description = m[1], m[2]
-    hours = 8 unless hours.present?
+    if (m = line.match /^==(\d*\.?\d*)\s(.*)/)
+      hours, description = m[1], m[2]
+      hours = 8 unless hours.present?
+      add_record(hours, description)
+    elsif (m = line.match /^\+(\d+\.\d+:\s)?(.*)/)
+      piece = m[2].strip
+      @composed_record += ", " unless @composed_record.empty? or @composed_record.end_with? "; "
+      @composed_record += piece
+    elsif line.strip == ';'
+      error "; ни к чему" if @composed_record.empty?
+      @composed_record += "; "
+    end
+  end
 
-    raise "Date not set" unless @date
+  def add_composed_record
+    return if @composed_record.empty?
+    add_record 8, @composed_record
+    @composed_record = ""
+  end
+
+  def add_record(hours, description)
+    error "Date not set" unless @date
 
     @collected << {hours: hours, description: description,
       date: @date, project: @project}
-    puts "> #{@date} #{hours}h row#{@row_index}: #{description}"
+    puts "#{@date} #{hours}h row#{@row_index}:".green
+    puts description
   end
 
   def echo_row
@@ -86,6 +104,7 @@ class Sync
   def set_date
     m = line.match /### \w{3} (\d+)/
     if m
+      add_composed_record
       @date = Date.today.change day: m[1].to_i
       true
     end
