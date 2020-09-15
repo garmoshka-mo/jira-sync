@@ -12,8 +12,6 @@ task report: :environment do
   puts "rk import project_name".blue
   `open reports/.`
 
-  puts "todo: не сортировать".red
-  puts "todo: проставлять крупные сразу с плюсиками - автоимпортируются, а мелкие без плюсика - значит не".red
 end
 
 task :reports => :report

@@ -81,15 +81,17 @@ class Report
           total_hours = work_log.map{|entry, duration| duration}.flatten.sum
           file.write("#### #{user} ⏰ #{to_hours total_hours}\n")
           work_log.each do |entry, duration|
-            file.write("#{to_hours duration}: #{entry}\n")
+            hours = to_hours duration
+            prefix = hours > 0.1 ? "+" : ""
+            file.write("#{prefix }#{hours}: #{entry}\n")
           end
         end
       end
     end
   end
 
-  def to_hours(seconds)
-    (seconds.to_f / 1000 / 60 / 60).round(1)
+  def to_hours(milliseconds)
+    (milliseconds.to_f / 1000 / 60 / 60).round(1)
   end
 
   def project(entry)
