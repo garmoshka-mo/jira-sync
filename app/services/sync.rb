@@ -20,6 +20,7 @@ class Sync
       handle_row
       @row_index += 1
     end
+    add_composed_record
     summary
   end
 
