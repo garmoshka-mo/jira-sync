@@ -80,9 +80,7 @@ class Report
         day.map do |user, work_log|
           total_hours = work_log.map{|entry, duration| duration}.flatten.sum
           file.write("#### #{user} ⏰ #{to_hours total_hours}\n")
-          work_log.sort do |row1, row2|
-            row2[1].to_i <=> row1[1].to_i # duration
-          end.each do |entry, duration|
+          work_log.each do |entry, duration|
             file.write("#{to_hours duration}: #{entry}\n")
           end
         end
