@@ -13,7 +13,7 @@ class TogglReport
     begin
       p = portion
       @total += p[:data].count
-      p[:data].each do |row|
+      p[:data].reverse.each do |row|
         yield row
       end
     end while @total < p[:total_count]
