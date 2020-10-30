@@ -9,7 +9,7 @@ class Sync
     @lines = File.readlines @path
     @date = nil
     @collected = []
-    @composed_record = ""
+    @composed_record, @composed_hours = "", 8
     @jira = Jira.new
     load_project project
   end
@@ -69,7 +69,9 @@ class Sync
   end
 
   def collect_hours_record
-    if (m = line.match /^==(\d*\.?\d*)\s(.*)/)
+    if (m = line.strip.match /^==(\d*\.?\d*)$/)
+      @composed_hours = m[1].to_i
+    elsif (m = line.match /^==(\d*\.?\d*)\s(.*)/)
       hours, description = m[1], m[2]
       hours = 8 unless hours.present?
       add_record(hours, description)
@@ -85,8 +87,8 @@ class Sync
 
   def add_composed_record
     return if @composed_record.empty?
-    add_record 8, @composed_record
-    @composed_record = ""
+    add_record @composed_hours, @composed_record
+    @composed_record, @composed_hours = "", 8
   end
 
   def add_record(hours, description)
@@ -94,7 +96,7 @@ class Sync
 
     @collected << {hours: hours, description: description,
       date: @date, project: @project}
-    puts "#{@date} #{hours}h row#{@row_index}:".green
+    puts "#{@date.strftime "%^a %d"} #{hours}h row#{@row_index}:".green
     puts description
   end
 
