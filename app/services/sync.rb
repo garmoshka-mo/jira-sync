@@ -69,9 +69,9 @@ class Sync
   end
 
   def collect_hours_record
-    if (m = line.strip.match /^==(\d*\.?\d*)$/)
+    if (m = line.strip.match /^=(\d*\.?\d*)$/)
       @composed_hours = m[1].to_i
-    elsif (m = line.match /^==(\d*\.?\d*)\s(.*)/)
+    elsif (m = line.match /^=(\d*\.?\d*)\s(.*)/)
       hours, description = m[1], m[2]
       hours = 8 unless hours.present?
       add_record(hours, description)
