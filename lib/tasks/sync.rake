@@ -1,7 +1,8 @@
 
-task import: :environment do |_, args|
+task upload: :environment do |_, args|
 
   project = args[0]
+  raise "project for upload isn't specified" unless project.present?
   sync = Sync.new project
 
   start_from = ENV['START']&.to_i || 1

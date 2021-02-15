@@ -10,7 +10,7 @@ task report: :environment do
   puts "=4 Description of work".blue
   puts "=3".blue
   puts "+Description of work".blue
-  puts "rk import project_name".blue
+  puts "rk upload project_name".blue
   `open reports/.`
 
 end
