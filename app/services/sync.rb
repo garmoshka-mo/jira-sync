@@ -92,7 +92,10 @@ class Sync
   end
 
   def add_record(hours, description)
-    error "Date not set" unless @date
+    error "Date not set for etry: #{description}" unless @date
+
+    description.gsub! "launch,", ""
+    error "word 'launch' met" if description.include? "launch,"
 
     @collected << {hours: hours, description: description,
       date: @date, project: @project}
