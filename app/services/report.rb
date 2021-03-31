@@ -18,7 +18,11 @@ class Report
   def collect_entries
     @entries = {}
     toggl = TogglReport.new start_from
+    rows = []
     toggl.each do |row|
+      rows << row
+    end
+    rows.sort_by{|row|row[:start]}.each do |row|
       pr_name = project(row).name
       pr = @entries[pr_name] ||= {}
 
