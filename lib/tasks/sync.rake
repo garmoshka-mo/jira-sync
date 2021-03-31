@@ -14,6 +14,8 @@ task upload: :environment do |_, args|
 
 end
 
+task up: :upload
+
 
 task sync_from_spreadsheet: :environment do
 

@@ -1,5 +1,5 @@
 
-task report: :environment do
+task download: :environment do
 
   puts "Toggl report"
   Report.new.create
@@ -15,4 +15,4 @@ task report: :environment do
 
 end
 
-task :reports => :report
+task down: :download
