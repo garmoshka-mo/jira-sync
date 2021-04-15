@@ -28,6 +28,10 @@ class TogglReport
       password: 'api_token'
     )
     JSON.parse result.body, symbolize_names: true
+  rescue => e
+    puts e
+    puts e.response.body
+    nil
   end
 
 end
