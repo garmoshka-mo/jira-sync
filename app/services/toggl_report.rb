@@ -23,7 +23,7 @@ class TogglReport
     @page += 1
     result = RestClient::Request.execute(
       method: :get,
-      url: "https://toggl.com/reports/api/v2/details?workspace_id=#{WORKSPACE_ID}&since=#{@since}&until=#{@until}&user_agent=api_test&page=#{@page}",
+      url: "https://api.track.toggl.com/reports/api/v2/details?workspace_id=#{WORKSPACE_ID}&since=#{@since}&until=#{@until}&user_agent=api_test&page=#{@page}",
       user: ENV['TOGGL_TOKEN'],
       password: 'api_token'
     )
