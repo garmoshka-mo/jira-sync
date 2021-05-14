@@ -37,6 +37,9 @@ class Report
                    Time.now - started_at
                  end
       entry = row[:description]
+      entry.gsub! /launch(;|,|$)/, ''
+      entry.gsub! /view tasks(;|,|$)/, ''
+      entry.gsub! /talk/, ''
       work_log[entry] ||= 0
       work_log[entry] += duration
     end

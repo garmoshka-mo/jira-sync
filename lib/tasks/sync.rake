@@ -1,13 +1,13 @@
 
 task upload: :environment do |_, args|
 
-  project = args[0]
+  project = args[0] || 'activate'
   raise "project for upload isn't specified" unless project.present?
   sync = Sync.new project
 
   start_from = ENV['START']&.to_i || 1
   sync.collect start_from
-  if Dialog.yes? "Import records?"
+  if Dialog.yes? "Upload records?"
     sync.import
     puts :done
   end
