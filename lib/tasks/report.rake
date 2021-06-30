@@ -16,3 +16,4 @@ task download: :environment do
 end
 
 task down: :download
+task d: :download
